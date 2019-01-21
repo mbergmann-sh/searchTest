@@ -2,6 +2,15 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
+
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qsciscintillabase.h>
+#include <Qsci/qscilexercpp.h>
+
+#include <search.h>
 
 namespace Ui {
 class MainWindow;
@@ -22,9 +31,12 @@ private slots:
     void on_btn_replace_clicked();
     void on_btn_replace_all_clicked();
     void do_search_and_replace(QString action_str);
+    void loadFile(const QString &fileName);
+    void fitMarginLines();
 
 private:
     Ui::MainWindow *ui;
+    const bool p_mydebug = true;
 };
 
 #endif // MAINWINDOW_H

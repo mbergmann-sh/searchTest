@@ -8,8 +8,45 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QString fileName = "moc_mainwindow.cpp";
+    QFontMetrics fontmetrics = QFontMetrics(ui->textEdit->font());
+
+    // set a readable default font for Linux and Windows:
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+        QFont font("Courier New", 10);
+        #elif defined(__APPLE__)
+        QFont font("SF Mono Regular", 11);
+        if(p_mydebug)
+            qDebug() << "Running on Mac. Font is SF Mono Regular now!";
+    #elif defined(__unix__)
+        QFont font("Source Code Pro", 9);
+        if(p_mydebug)
+            qDebug() << "Linux detected. Setting font to Source Code Pro";
+    #endif
+
+    QFont myfont = font;
+    myfont.setFixedPitch(true);
+    ui->textEdit->setFont(myfont);
+
+    ui->textEdit->setMarginsFont(ui->textEdit->font());
+    ui->textEdit->setMarginWidth(0, fontmetrics.width(QString::number(ui->textEdit->lines())) + 10);
+    ui->textEdit->setMarginLineNumbers(0, true);
+
+    // show line numbers
+    ui->textEdit->setMarginLineNumbers(0, true);
+    ui->textEdit->setMarginWidth(0, fontmetrics.width(QString::number(ui->textEdit->lines())) + 10);
+
     connect(ui->lineEdit_find, SIGNAL(textChanged(const QString &)), this, SLOT(do_search_and_replace(QString)));
+    // resize line numbers margin if needed!
+    connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(fitMarginLines()));
+    loadFile(fileName);
     ui->lineEdit_find->setFocus();
+
+    // init Lexer for C++
+    QsciLexerCPP *lexer = new QsciLexerCPP();
+    ui->textEdit->setLexer(lexer);
+    ui->textEdit->SendScintilla(ui->textEdit->QsciScintilla::SCI_STYLESETCHARACTERSET, 1, QsciScintilla::SC_CHARSET_8859_15);
+
 }
 
 MainWindow::~MainWindow()
@@ -77,4 +114,33 @@ void MainWindow::do_search_and_replace(QString action_str)
             }
         }
     }
+}
+
+void MainWindow::loadFile(const QString &fileName)
+{
+
+    qDebug() << "loadFile() called with parameter: " << fileName;
+
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly))
+    {
+        QMessageBox::warning(this, tr("searchTest"),
+                             tr("Cannot read file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+        return;
+    }
+
+    QTextStream in(&file);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    ui->textEdit->setText(in.readAll());
+    QApplication::restoreOverrideCursor();
+
+    statusBar()->showMessage(tr("File loaded"), 2000);
+}
+
+void MainWindow::fitMarginLines()
+{
+    QFontMetrics fontmetrics = ui->textEdit->fontMetrics();
+    ui->textEdit->setMarginWidth(0, fontmetrics.width(QString::number(ui->textEdit->lines())) + 10);
 }
