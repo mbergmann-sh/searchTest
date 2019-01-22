@@ -34,10 +34,13 @@ private slots:
     void loadFile(const QString &fileName);
     void fitMarginLines();
     void call_do_search_and_replace();
+    void reset_searchResult();
 
 private:
     Ui::MainWindow *ui;
     const bool p_mydebug = true;
+    QString text;
+    QString docText;
 };
 
 #endif // MAINWINDOW_H

@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
-CONFIG += qscintilla2 c++14 release
+CONFIG += qscintilla2 c++14 debug
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
