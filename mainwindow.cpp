@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // give a file to load and load it into editor:
     QString fileName = "moc_mainwindow.cpp";
     QFontMetrics fontmetrics = QFontMetrics(ui->textEdit->font());
 
@@ -24,10 +26,10 @@ MainWindow::MainWindow(QWidget *parent) :
             qDebug() << "Linux detected. Setting font to Source Code Pro";
     #endif
 
+    // set margins, so line numbering will fit:
     QFont myfont = font;
     myfont.setFixedPitch(true);
     ui->textEdit->setFont(myfont);
-
     ui->textEdit->setMarginsFont(ui->textEdit->font());
     ui->textEdit->setMarginWidth(0, fontmetrics.width(QString::number(ui->textEdit->lines())) + 10);
     ui->textEdit->setMarginLineNumbers(0, true);
@@ -36,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->textEdit->setMarginLineNumbers(0, true);
     ui->textEdit->setMarginWidth(0, fontmetrics.width(QString::number(ui->textEdit->lines())) + 10);
 
-    connect(ui->lineEdit_find, SIGNAL(textChanged(const QString &)), this, SLOT(do_search_and_replace(QString)));
+    connect(ui->lineEdit_find, SIGNAL(editingFinished()), this, SLOT(call_do_search_and_replace())); // Helper slot for compatibel call!
     // resize line numbers margin if needed!
     connect(ui->textEdit, SIGNAL(textChanged()), this, SLOT(fitMarginLines()));
     loadFile(fileName);
@@ -77,6 +79,17 @@ void MainWindow::on_btn_replace_clicked()
 void MainWindow::on_btn_replace_all_clicked()
 {
 
+}
+
+//
+// search and replace:
+// Helper slot for compatible call of do_search_and_replace()
+// from editingFinished()
+// void call_do_search_and_replace()
+//
+void MainWindow::call_do_search_and_replace()
+{
+    do_search_and_replace("0");
 }
 
 //

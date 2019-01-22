@@ -33,6 +33,7 @@ private slots:
     void do_search_and_replace(QString action_str);
     void loadFile(const QString &fileName);
     void fitMarginLines();
+    void call_do_search_and_replace();
 
 private:
     Ui::MainWindow *ui;
